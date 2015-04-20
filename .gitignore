@@ -57,3 +57,10 @@ docs/_build/
 target/
 
 config.ini
+
+#Idea
+.idea
+
+#Coverage
+.coverage
+htmlcov/*
