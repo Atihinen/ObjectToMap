@@ -1,7 +1,6 @@
 from bottle import Bottle, response, run, route
 import json
 from lib.db import engine, plugin, sqlalchemy, db
-from models import Entity
 
 
 app = Bottle()
