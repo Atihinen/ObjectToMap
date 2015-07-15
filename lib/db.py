@@ -1,8 +1,10 @@
 from bottle.ext import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from utils.configreader import get_db_configs
+db_config = get_db_configs()
 Base = declarative_base()
-engine = create_engine('mysql://root:vertrigo@localhost:3306/otm', echo=False)
+engine = create_engine('mysql://{}:{}@{}:{}/{}'.format(db_config["user"], db_config["password"], db_config["domain"], db_config["port"], db_config["database"]), echo=False)
 plugin = sqlalchemy.Plugin(
     engine, # SQLAlchemy engine created with create_engine function.
     Base.metadata, # SQLAlchemy metadata, required only if create=True.

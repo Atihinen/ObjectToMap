@@ -20,7 +20,11 @@ class Manager():
     def run_action(self, action, **kwargs):
         print kwargs
         if action == "init_db_config":
-            self.create_ini(kwargs["user"], kwargs["password"], kwargs["database"])
+            if "port" in kwargs:
+                if kwargs["port"]:
+                    self.create_ini(kwargs["user"], kwargs["password"], kwargs["database"], kwargs["url"], kwargs["port"])
+                    return
+            self.create_ini(kwargs["user"], kwargs["password"], kwargs["database"], kwargs["url"])
         elif action == "delete_db_config":
             self.delete_ini()
         else:
@@ -38,16 +42,17 @@ class Manager():
             print "No help defined"
 
 
-    def create_ini(self, user, password, db):
-        if not user or not password or not db:
-            print "Arguments: u: {}, p: {}, d: {}".format(user, password, db)
+    def create_ini(self, user, password, db, url, port=3306):
+        if not user or not password or not db or not url:
             print self.create_ini_help()
             return
         template = """
 [db]
 user={}
 password={}
-databse={}""".format(user, password, db)
+database={}
+domain={}
+port={}""".format(user, password, db, url, port)
         if path.isfile(self._db_conf):
             raise IOError("File {} already exists, delete it first".format(self._db_conf))
         with open(self._db_conf, "w") as f:
@@ -57,11 +62,13 @@ databse={}""".format(user, password, db)
                 print "DB config created"
 
     def create_ini_help(self):
-        return """Usage: python manage.py create_ini -u <user> -p <password> -d <database> (-v -h)
+        return """Usage: python manage.py create_ini -u <user> -p <password> -d <database> -r <domain> (-o <port> -v -h)
         -u --user:     database username
         -p --password: database password
         -d --database: database name
+        -r --url: domain/ip address for the mysql
         Optional arguments
+        -o --port: mysql port, by default 3306
         -v --verbose:  prints debug messages
         -h --help:     prints this help
         """
@@ -88,10 +95,12 @@ def main():
     username = None
     password = None
     database = None
+    url = None
+    port = None
     opts = None
     if len(sys.argv) > 2:
         try:
-            opts, args = getopt(sys.argv[2:],"hh:v:u:p:d:",["--help", "--verbose", "--user=", "--password=", "--database="])
+            opts, args = getopt(sys.argv[2:],"hh:v:u:p:d:r:o:",["--help", "--verbose", "--user=", "--password=", "--database=", "--url=", "--port="])
         except:
             pass
         print opts
@@ -108,12 +117,16 @@ def main():
                     password = arg
                 elif opt == "-d" or opt == "--database":
                     database = arg
+                elif opt == "-r" or opt == "--url":
+                    url = arg
+                elif opt == "-o" or opt == "--port":
+                    port = arg
 
     m = Manager(verbose)
     if help_enabled:
         m.get_help(action)
     else:
-        m.run_action(action, user=username, password=password, database=database)
+        m.run_action(action, user=username, password=password, database=database, url=url, port=port)
 
 
 if __name__ == "__main__":
