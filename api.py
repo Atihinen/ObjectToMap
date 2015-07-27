@@ -24,6 +24,20 @@ def index():
     response.content_type = "application/json"
     return json_val
 
+@route('/category/', method="GET")
+def get_categories():
+    data = []
+    _categories = db.query(Category).all()
+    for category in _categories:
+        cont = {
+            'id': category.id,
+            'name': category.name
+        }
+        data.append(cont)
+    json_val = json.dumps(data)
+    response.content_type = "application/json"
+    return json_val
+
 @route('/category/new', method="POST")
 def new_category():
     if "name" in request.forms:
@@ -44,4 +58,4 @@ def new_category():
 
 
 if __name__ == "__main__":
-    run(host='127.0.0.1', port=8080)
+    run(host='0.0.0.0', port=8080)
