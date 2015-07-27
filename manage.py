@@ -16,7 +16,8 @@ class Manager():
         self._list_of_actions = [
                 "init_db_config",
                 "delete_db_config",
-                "darwin"
+                "darwin",
+                "init_db"
                 ]
 
 
@@ -32,6 +33,8 @@ class Manager():
             self.delete_ini()
         elif action == "darwin":
             self.run_migrations()
+        elif action == "init_db":
+            self.init_db()
         else:
             print "No action {}. Complete list of actions: {}".format(action, ",".join(self._list_of_actions))
 
@@ -40,7 +43,8 @@ class Manager():
         helps = {
             "init_db_config": self.create_ini_help(),
             "delete_db_config": self.delete_ini_help(),
-            "darwin": self.migration_help()
+            "darwin": self.migration_help(),
+            "init_db": self.init_db_help()
         }
         if action in helps:
             print helps.get(action)
@@ -107,6 +111,15 @@ port={}""".format(user, password, db, url, port)
         return """Usage: python manage.py darwin
 
         Runs SQL files in order from folder {}""".format(self.evolutions)
+
+    def init_db(self):
+        d = Darwin()
+        d.init_db()
+
+    def init_db_help(self):
+        return """Usage: python manage.py init_db
+
+        Creates table for evolution files"""
 
 def main():
     print sys.argv
