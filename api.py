@@ -62,6 +62,26 @@ def delete_category(id):
         traceback.print_exc()
         return HTTPResponse(status=500)
 
+@route('/category/<id>/', method="PUT")
+def update_category(id):
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return HTTPResponse(status=406)
+    if not "name" in request.forms:
+        return HTTPResponse(status=400)
+    name = request.forms.get("name")
+    c = db.query(Category).get(id)
+    c.name = name
+    if not c.validate():
+        try:
+            db.commit()
+            return HTTPResponse(staus=200)
+        except Exception as err:
+            traceback.print_exc()
+            return HTTPResponse(status=500)
+    return HTTPResponse(status=406)
+
+
 
 @route('/category/new', method="POST")
 def new_category():

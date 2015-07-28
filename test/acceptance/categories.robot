@@ -49,6 +49,7 @@ Get Existing Category Should Return Correct Data
   ${id}=  Get Category Id  ${category}
   ${resp}  ${category}=  Get Category  ${LOCATION}  ${id}
   Verify That Category Contains Correct Values  ${category}  category 1
+  [Teardown]  Run Keyword If Test Passed  Delete If Needed  category 1
 
 Fetching Not Existing Category Should Return 404
   ${resp}  ${category}=  Get Category  ${LOCATION}  0
@@ -57,6 +58,23 @@ Fetching Not Existing Category Should Return 404
 Fetching Category With Invalid Id Should Return 406
   ${resp}  ${category}=  Get Category  ${LOCATION}  asdsas
   Verify that '${resp}' status code is '406'
+
+Updating Category With Valid Values Should Return 200
+  ${data}=  Create Category Data  update_category
+  ${resp}=  Create New Category  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '200'
+  ${categories}=  Get Categories  ${LOCATION}
+  ${category}=  Get Latest Item  ${categories}
+  ${id}=  Get Category Id  ${category}
+  ${resp}  ${category}=  Get Category  ${LOCATION}  ${id}
+  Verify That Category Contains Correct Values  ${category}  update_category
+  ${data}=  Create Category Data  updated_category
+  ${resp}=  Update Category  ${id}  ${data}  ${LOCATION}
+  Verify that '${resp}' status code is '200'
+  ${resp}  ${category}=  Get Category  ${LOCATION}  ${id}
+  Verify That Category Contains Correct Values  ${category}  updated_category
+  [Teardown]  Run Keyword If Test Passed  Delete If Needed  updated_category
+
 
 *** Keywords ***
 Get Categories
@@ -117,9 +135,16 @@ Get Category Id
   [Return]  ${id}
 
 Delete If Needed
+  [Arguments]  ${name}=My cat
   ${categories}=  Get Categories  ${LOCATION}
   ${category}=  Get Latest Item  ${categories}
-  Verify That Category Contains Correct Values  ${category}  My cat
+  Verify That Category Contains Correct Values  ${category}  ${name}
   ${id}=  Get Category Id  ${category}
   Delete Category  ${id}  ${LOCATION}
   Verify that '${resp}' Status Code Is '200'
+
+Update Category
+  [Arguments]  ${id}  ${data}  ${session}
+  ${headers}=  Create Post Headers
+  ${resp}=  Put  ${session}  /category/${id}/  data=${data}  headers=${headers}
+  [Return]  ${resp}
