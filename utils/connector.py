@@ -49,6 +49,8 @@ class Darwin():
         except mdb.Error, e:
             print "Error {}: {}".format(e.args[0], e.args[1:])
         self.close_connection()
+        if len(result) == 0:
+            return ()
         return result[0]
 
     def init_db(self):

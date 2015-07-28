@@ -87,6 +87,9 @@ def update_category(id):
 def new_category():
     if "name" in request.forms:
         name = request.forms.get('name')
+        _name = db.query(Category).filter_by(name=name).first()
+        if _name:
+            return HTTPResponse(status=409)
         c = Category(name)
         if not c.validate():
             try:

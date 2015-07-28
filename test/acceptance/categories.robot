@@ -12,6 +12,19 @@ Create new category with default values should return 200
   Verify that '${resp}' Status Code Is '200'
   [Teardown]  Run Keyword If Test Passed  Delete If Needed
 
+Creating Dublicate Category Should Return 409
+  ${data}=  Create Category Data  dublicate
+  ${resp}=  Create New Category  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '200'
+  ${categories}=  Get Categories  ${LOCATION}
+  ${category}=  Get Latest Item  ${categories}
+  Verify That Category Contains Correct Values  ${category}  dublicate
+  ${id}=  Get Category Id  ${category}
+  ${resp}=  Create New Category  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '409'
+  ${resp}=  Delete Category  ${id}  ${LOCATION}
+  Verify that '${resp}' status code is '200'
+
 Creating new category with invalid values should return 406
   ${too_long}=  Generate Random String  51
   ${data}=  Create Category Data  ${too_long}
