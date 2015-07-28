@@ -1,6 +1,7 @@
 from bottle.ext import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+
 from utils.configreader import get_db_configs
 db_config = get_db_configs()
 Base = declarative_base()

@@ -1,6 +1,7 @@
 from lib.db import Base
 from sqlalchemy import Column, Integer, Sequence, String
 from utils import validator
+import json
 
 class FireHydrant(Base):
     __tablename__ = 'fire_hydrant'
@@ -53,3 +54,13 @@ class Category(Base):
         self.errors = {}
         self.validate_name()
         return self.errors
+
+    def get_data(self):
+        d = {
+            "id": self.id,
+            "name": self.name
+        }
+        return d
+
+    def to_json(self):
+        return json.dumps(self.get_data())

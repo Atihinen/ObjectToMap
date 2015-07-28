@@ -6,6 +6,7 @@ class ErrorMessages(Enum):
     OK = 0
     EMPTY_VAL = 1
     TOO_LONG = 2
+    NOT_NUMBER = 3
 
 def validate_empty(value):
     if not value:

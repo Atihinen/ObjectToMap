@@ -3,11 +3,11 @@ import json
 import traceback
 from lib.db import engine, plugin, sqlalchemy, db
 from models import Category
-from sqlalchemy.orm import Session
+from utils.formatter import convert_to_integer
+from utils.validator import ErrorMessages
 
 
 app = Bottle()
-session = Session(engine)
 
 app.install(plugin)
 
@@ -29,14 +29,39 @@ def get_categories():
     data = []
     _categories = db.query(Category).all()
     for category in _categories:
-        cont = {
-            'id': category.id,
-            'name': category.name
-        }
-        data.append(cont)
-    json_val = json.dumps(data)
+        data.append(category.get_data())
     response.content_type = "application/json"
+    json_val = json.dumps(data)
     return json_val
+
+@route('/category/<id>/', method="GET")
+def get_category(id):
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return HTTPResponse(status=406, body={})
+    c = db.query(Category).get(id)
+    if not c:
+        return HTTPResponse(status=404, body={})
+    response.content_type = "application/json"
+    return c.to_json()
+
+@route('/category/<id>/', method="DELETE")
+def delete_category(id):
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return HTTPResponse(status=406)
+    c = db.query(Category).get(id)
+    if not c:
+        return HTTPResponse(status=404)
+    try:
+        db.delete(c)
+        db.commit()
+        return HTTPResponse(status=200)
+    except:
+        print "Something went wrong"
+        traceback.print_exc()
+        return HTTPResponse(status=500)
+
 
 @route('/category/new', method="POST")
 def new_category():
@@ -44,10 +69,9 @@ def new_category():
         name = request.forms.get('name')
         c = Category(name)
         if not c.validate():
-            print "Validated"
             try:
-                session.add(c)
-                session.commit()
+                db.add(c)
+                db.commit()
                 return HTTPResponse(status=200)
             except Exception as err:
                 traceback.print_exc()
