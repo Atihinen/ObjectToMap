@@ -13,13 +13,13 @@ app.install(plugin)
 
 def set_cors(response):
     response['Access-Control-Allow-Origin'] = '*'
-    response['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
+    response['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE'
     response['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
 
 @hook('after_request')
 def enable_cors():
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE'
     response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
 
 @route('/', method="GET")
@@ -56,8 +56,10 @@ def get_category(id):
     response.content_type = "application/json"
     return c.to_json()
 
-@route('/category/<id>/', method="DELETE")
+@route('/category/<id>/', method=['OPTIONS', 'DELETE'])
 def delete_category(id):
+    if request.method == 'OPTIONS':
+        return setHTTPResponse(status=200)
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
         return setHTTPResponse(status=406)
