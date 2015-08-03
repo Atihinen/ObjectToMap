@@ -1,4 +1,4 @@
-from bottle import Bottle, response, request, run, route, HTTPResponse
+from bottle import Bottle, response, request, run, route, HTTPResponse, hook
 import json
 import traceback
 from lib.db import engine, plugin, sqlalchemy, db
@@ -10,6 +10,17 @@ from utils.validator import ErrorMessages
 app = Bottle()
 
 app.install(plugin)
+
+def set_cors(response):
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
+    response['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+
+@hook('after_request')
+def enable_cors():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
 
 @route('/', method="GET")
 def index():
@@ -24,7 +35,7 @@ def index():
     response.content_type = "application/json"
     return json_val
 
-@route('/category/', method="GET")
+@route('/category/', method=['OPTIONS', 'GET'])
 def get_categories():
     data = []
     _categories = db.query(Category).all()
@@ -38,10 +49,10 @@ def get_categories():
 def get_category(id):
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
-        return HTTPResponse(status=406, body={})
+        return setHTTPResponse(status=406, body={})
     c = db.query(Category).get(id)
     if not c:
-        return HTTPResponse(status=404, body={})
+        return setHTTPResponse(status=404, body={})
     response.content_type = "application/json"
     return c.to_json()
 
@@ -49,26 +60,26 @@ def get_category(id):
 def delete_category(id):
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
-        return HTTPResponse(status=406)
+        return setHTTPResponse(status=406)
     c = db.query(Category).get(id)
     if not c:
-        return HTTPResponse(status=404)
+        return setHTTPResponse(status=404)
     try:
         db.delete(c)
         db.commit()
-        return HTTPResponse(status=200)
+        return setHTTPResponse(status=200)
     except:
         print "Something went wrong"
         traceback.print_exc()
-        return HTTPResponse(status=500)
+        return setHTTPResponse(status=500)
 
 @route('/category/<id>/', method="PUT")
 def update_category(id):
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
-        return HTTPResponse(status=406)
+        return setHTTPResponse(status=406)
     if not "name" in request.forms:
-        return HTTPResponse(status=400)
+        return setHTTPResponse(status=400)
     name = request.forms.get("name")
     c = db.query(Category).get(id)
     c.name = name
@@ -78,29 +89,39 @@ def update_category(id):
             return HTTPResponse(staus=200)
         except Exception as err:
             traceback.print_exc()
-            return HTTPResponse(status=500)
-    return HTTPResponse(status=406)
+            return setHTTPResponse(status=500)
+    return setHTTPResponse(status=406)
 
 
 
-@route('/category/new', method="POST")
+@route('/category/new', method=['OPTIONS', 'POST'])
 def new_category():
     if "name" in request.forms:
         name = request.forms.get('name')
         _name = db.query(Category).filter_by(name=name).first()
         if _name:
-            return HTTPResponse(status=409)
+            return setHTTPResponse(status=409)
         c = Category(name)
         if not c.validate():
             try:
                 db.add(c)
                 db.commit()
-                return HTTPResponse(status=200)
+                return setHTTPResponse(status=200)
+
             except Exception as err:
                 traceback.print_exc()
-                return HTTPResponse(status=500)
-        return HTTPResponse(status=406)
-    return HTTPResponse(status=400)
+                return setHTTPResponse(status=500)
+        return setHTTPResponse(status=406)
+    return setHTTPResponse(status=400)
+
+def setHTTPResponse(status, body=None):
+    response = None
+    if body != None:
+        response = HTTPResponse(status=status, body=body)
+    else:
+        response = HTTPResponse(status=status)
+    set_cors(response)
+    return response
 
 
 
