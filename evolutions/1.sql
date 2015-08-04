@@ -1,5 +1,6 @@
-CREATE TABLE categories (
-    id INTEGER(255) NOT NULL AUTO_INCREMENT,
-    name VARCHAR(50),
-    PRIMARY KEY (id)
-)
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
