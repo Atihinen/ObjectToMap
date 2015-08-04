@@ -87,7 +87,7 @@ def update_category(id):
     name = request.forms.get("name")
     _name = db.query(Category).filter_by(name=name).first()
     if _name:
-        return setHTTPResponse(status=409)
+        return setHTTPResponse(status=409, body=json.dumps({'name': 'DUBLICATE'}))
     c = db.query(Category).get(id)
     c.name = name
     if not c.validate():
@@ -107,7 +107,7 @@ def new_category():
         name = request.forms.get('name')
         _name = db.query(Category).filter_by(name=name).first()
         if _name:
-            return setHTTPResponse(status=409)
+            return setHTTPResponse(status=409, body=json.dumps({"name": "DUBLICATE"}))
         c = Category(name)
         if not c.validate():
             try:
@@ -118,7 +118,7 @@ def new_category():
             except Exception as err:
                 traceback.print_exc()
                 return setHTTPResponse(status=500)
-        return setHTTPResponse(status=406)
+        return setHTTPResponse(status=406, body=json.dumps(c.validate()))
     return setHTTPResponse(status=400)
 
 def setHTTPResponse(status, body=None):
