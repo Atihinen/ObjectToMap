@@ -88,6 +88,31 @@ Updating Category With Valid Values Should Return 200
   Verify That Category Contains Correct Values  ${category}  updated_category
   [Teardown]  Run Keyword If Test Passed  Delete If Needed  updated_category
 
+Update Category with existing name should return 409
+  ${data}=  Create Category Data  update_category
+  ${resp}=  Create New Category  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '200'
+  ${categories}=  Get Categories  ${LOCATION}
+  ${category}=  Get Latest Item  ${categories}
+  ${id}=  Get Category Id  ${category}
+  ${resp}  ${category}=  Get Category  ${LOCATION}  ${id}
+  Verify That Category Contains Correct Values  ${category}  update_category
+  ${id}=  Get Category Id  ${category}
+  ${data}=  Create Category Data  update_category2
+  ${resp}=  Create New Category  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '200'
+  ${categories}=  Get Categories  ${LOCATION}
+  ${category2}=  Get Latest Item  ${categories}
+  ${id2}=  Get Category Id  ${category2}
+  ${resp}  ${category2}=  Get Category  ${LOCATION}  ${id2}
+  Verify That Category Contains Correct Values  ${category2}  update_category2
+  ${data}=  Create Category Data  update_category
+  ${resp}=  Update Category  ${id2}  ${data}  ${LOCATION}
+  Verify that '${resp}' status code is '409'
+  ${resp}=  Delete Category  ${id}  ${LOCATION}
+  Verify that '${resp}' Status Code Is '200'
+  ${resp}=  Delete Category  ${id2}  ${LOCATION}
+  Verify that '${resp}' Status Code Is '200'
 
 *** Keywords ***
 Get Categories

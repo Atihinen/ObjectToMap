@@ -75,24 +75,29 @@ def delete_category(id):
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
-@route('/category/<id>/', method="PUT")
+@route('/category/<id>/', method=['OPTIONS', 'PUT'])
 def update_category(id):
+    if request.method == 'OPTIONS':
+        return setHTTPResponse(status=200)
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
-        return setHTTPResponse(status=406)
+        return setHTTPResponse(status=406, body=json.dumps({'id': 'NOT_NUMBER'}))
     if not "name" in request.forms:
         return setHTTPResponse(status=400)
     name = request.forms.get("name")
+    _name = db.query(Category).filter_by(name=name).first()
+    if _name:
+        return setHTTPResponse(status=409)
     c = db.query(Category).get(id)
     c.name = name
     if not c.validate():
         try:
             db.commit()
-            return HTTPResponse(staus=200)
+            return setHTTPResponse(status=200)
         except Exception as err:
             traceback.print_exc()
             return setHTTPResponse(status=500)
-    return setHTTPResponse(status=406)
+    return setHTTPResponse(status=406, body=json.dumps(c.validate()))
 
 
 
