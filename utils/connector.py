@@ -39,6 +39,63 @@ class Darwin():
                         print "Error {}: {}".format(e.args[0], e.args[1:])
         self.close_connection()
 
+    def create_category(self, category_name):
+        if not category_name:
+            raise ValueError("Category name not defined")
+        self.create_connection()
+        sql = """INSERT INTO categories (name) VALUES ('{}')"""\
+            .format(category_name)
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(sql)
+            self.con.commit()
+        except mdb.Error, e:
+            self.con.rollback()
+            print "Error {}: {}".format(e.args[0], e.args[1:])
+        self.close_connection()
+        self.create_connection()
+        id = None
+        sql = """SELECT id FROM categories WHERE name='{}'"""\
+            .format(category_name)
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(sql)
+            id = cursor.fetchone()
+        except mdb.Error, e:
+            print "Error {}: {}".format(e.args[0], e.args[1:])
+        finally:
+            self.close_connection()
+            return id[0]
+
+    def get_categories(self):
+        self.create_connection()
+        sql = """SELECT * FROM categories
+        """
+        rows = None
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+        except mdb.Error, e:
+            print "Error {}: {}".format(e.args[0], e.args[1:])
+        finally:
+            self.close_connection()
+            return rows
+
+    def create_fire_hydrant(self, cat_id, lat, long, desc, trunk_line):
+        self.create_connection()
+        sql = """INSERT INTO fire_hydrants (description, trunk_line_diameter, latitude, longitude, category_id)
+        VALUES ('{}', '{}', '{}', '{}', '{}')"""\
+            .format(desc, trunk_line, lat, long, cat_id)
+        try:
+            cursor = self.con.cursor()
+            cursor.execute(sql)
+            self.con.commit()
+        except mdb.Error, e:
+            self.con.rollback()
+            print "Error {}: {}".format(e.args[0], e.args[1:])
+        self.close_connection()
+
     def get_evolutions(self):
         result = None
         try:

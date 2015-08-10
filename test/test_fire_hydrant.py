@@ -12,12 +12,6 @@ class TestFireHydrant(unittest.TestCase):
     def test_should_return_correct_messages_with_empty_values(self):
         fh = FireHydrant("", "", "", "", "", "")
         res = fh.validate()
-        self.assertTrue("name" in res)
-        self.assertEqual(_empty_val, res['name'])
-        self.assertTrue('description' in res)
-        self.assertEqual(_empty_val, res['description'])
-        self.assertTrue('trunk_line_diameter' in res)
-        self.assertEqual(_empty_val, res['trunk_line_diameter'])
         self.assertTrue('category_id' in res)
         self.assertEqual(_empty_val, res['category_id'])
         self.assertTrue('latitude' in res)
@@ -31,8 +25,6 @@ class TestFireHydrant(unittest.TestCase):
             val = "{}{}".format(val, chr(i))
         fh = FireHydrant(val, val, val, "asd", "abs", "dod")
         res = fh.validate()
-        self.assertTrue("name" in res)
-        self.assertEqual(_too_long, res['name'])
         self.assertTrue('description' in res)
         self.assertEqual(_too_long, res['description'])
         self.assertTrue('trunk_line_diameter' in res)
@@ -43,22 +35,6 @@ class TestFireHydrant(unittest.TestCase):
         self.assertEqual(_not_float, res['latitude'])
         self.assertTrue('longitude' in res)
         self.assertEqual(_not_float, res['longitude'])
-
-    def test_validate_name_should_give_correct_messages(self):
-        fh = FireHydrant("name", "description", "trunk_line_diameter", 1, 1.2, 1.3)
-        fh.validate_name()
-        self.assertFalse("name" in fh.errors)
-        val = ""
-        for i in range(51):
-            val = "{}{}".format(val, chr(i))
-        fh.name = val
-        fh.validate_name()
-        self.assertTrue("name" in fh.errors)
-        self.assertEqual(_too_long, fh.errors['name'])
-        fh.name = ""
-        fh.validate_name()
-        self.assertTrue("name" in fh.errors)
-        self.assertEqual(_empty_val, fh.errors['name'])
 
     def test_validate_description_should_give_correct_messages(self):
         fh = FireHydrant("name", "description", "trunk_line_diameter", 1, 1.2, 1.3)
@@ -71,10 +47,6 @@ class TestFireHydrant(unittest.TestCase):
         fh.validate_description()
         self.assertTrue("description" in fh.errors)
         self.assertEqual(_too_long, fh.errors['description'])
-        fh.description = ""
-        fh.validate_description()
-        self.assertTrue("description" in fh.errors)
-        self.assertEqual(_empty_val, fh.errors['description'])
 
     def test_validate_trunk_line_diameter_should_give_correct_messages(self):
         fh = FireHydrant("name", "description", "trunk_line_diameter", 1, 1.2, 1.3)
@@ -87,10 +59,6 @@ class TestFireHydrant(unittest.TestCase):
         fh.validate_trunk_line_diameter()
         self.assertTrue("trunk_line_diameter" in fh.errors)
         self.assertEqual(_too_long, fh.errors['trunk_line_diameter'])
-        fh.trunk_line_diameter = ""
-        fh.validate_trunk_line_diameter()
-        self.assertTrue("trunk_line_diameter" in fh.errors)
-        self.assertEqual(_empty_val, fh.errors['trunk_line_diameter'])
 
     def test_validate_category_id_should_give_correct_messages(self):
         fh = FireHydrant("name", "description", "trunk_line_diameter", 1, 1.2, 1.3)

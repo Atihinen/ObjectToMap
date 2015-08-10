@@ -17,7 +17,8 @@ class Manager():
                 "init_db_config",
                 "delete_db_config",
                 "darwin",
-                "init_db"
+                "init_db",
+                "import_csv"
                 ]
 
 
@@ -35,6 +36,8 @@ class Manager():
             self.run_migrations()
         elif action == "init_db":
             self.init_db()
+        elif action == "import_csv":
+            self.import_csv(kwargs["csvfile"])
         else:
             print "No action {}. Complete list of actions: {}".format(action, ",".join(self._list_of_actions))
 
@@ -44,7 +47,8 @@ class Manager():
             "init_db_config": self.create_ini_help(),
             "delete_db_config": self.delete_ini_help(),
             "darwin": self.migration_help(),
-            "init_db": self.init_db_help()
+            "init_db": self.init_db_help(),
+            "import_csv": self.import_csv_help()
         }
         if action in helps:
             print helps.get(action)
@@ -82,6 +86,59 @@ port={}""".format(user, password, db, url, port)
         -v --verbose:  prints debug messages
         -h --help:     prints this help
         """
+
+    def import_csv_help(self):
+        return """Usage: python manage.py import_csv -f <file>
+        -f --file:  CSV file to be imported
+        """
+
+    def import_csv(self, csvfile):
+        if not path.isfile(csvfile):
+            raise IOError("File {} not found".format(csvfile))
+        categories = self.get_categories()
+        data = None
+        with open(csvfile, "r") as f:
+            data = f.readlines()[1:]
+        for line in data:
+            d = line.split(",")
+            cat = d[3].lower()
+            if not cat in categories:
+                id = self.create_category(cat)
+                categories[cat] = id
+            lat = d[1]
+            long = d[2]
+            cat_id = categories[d[3].lower()]
+            desc = ""
+            try:
+                desc = d[4]
+            except:
+                pass
+            trunk_line = ""
+            try:
+                trunk_line = d[5]
+            except:
+                pass
+            self.create_fire_hydrant(cat_id, lat, long, desc, trunk_line)
+
+
+    def create_fire_hydrant(self, cat_id, lat, long, desc, trunk_line):
+        d = Darwin()
+        d.create_fire_hydrant(cat_id, lat, long, desc, trunk_line)
+
+    def create_category(self, category_name):
+        d = Darwin()
+        id = d.create_category(category_name)
+        return id
+
+    def get_categories(self):
+        d = Darwin()
+        rows = d.get_categories()
+        categories = {}
+        if len(rows) > 1:
+            for row in rows:
+                categories[row[1]]=row[0]
+        return categories
+
 
     def delete_ini(self):
         if path.isfile(self._db_conf):
@@ -135,9 +192,10 @@ def main():
     url = None
     port = None
     opts = None
+    csvfile = None
     if len(sys.argv) > 2:
         try:
-            opts, args = getopt(sys.argv[2:],"hh:v:u:p:d:r:o:",["--help", "--verbose", "--user=", "--password=", "--database=", "--url=", "--port="])
+            opts, args = getopt(sys.argv[2:],"hh:v:u:p:d:r:o:f:",["--help", "--verbose", "--user=", "--password=", "--database=", "--url=", "--port=", "--file="])
         except:
             pass
         print opts
@@ -158,12 +216,14 @@ def main():
                     url = arg
                 elif opt == "-o" or opt == "--port":
                     port = arg
+                elif opt == "-f" or opt == "--file":
+                    csvfile = arg
 
     m = Manager(verbose)
     if help_enabled:
         m.get_help(action)
     else:
-        m.run_action(action, user=username, password=password, database=database, url=url, port=port)
+        m.run_action(action, user=username, password=password, database=database, url=url, port=port, csvfile=csvfile)
 
 
 if __name__ == "__main__":

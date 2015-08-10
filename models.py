@@ -12,7 +12,6 @@ _not_float = "NOT_FLOAT"
 class FireHydrant(Base):
     __tablename__ = 'fire_hydrants'
     id = Column(Integer, Sequence('id_seq'), primary_key=True)
-    name = Column(String(50))
     description = Column(String(50))
     trunk_line_diameter = Column(String(50))
     latitude = Column(Float)
@@ -28,29 +27,12 @@ class FireHydrant(Base):
         self.latitude = latitude
         self.longitude = longitude
 
-    def validate_name(self):
-        is_empty = validator.validate_empty(self.name)
-        if is_empty == validator.ErrorMessages.EMPTY_VAL:
-            self.errors['name'] = _empty_val
-            return
-        is_not_valid = validator.validate_length(self.name, 50)
-        if is_not_valid == validator.ErrorMessages.TOO_LONG:
-            self.errors['name'] = _too_long
-
     def validate_description(self):
-        is_empty = validator.validate_empty(self.description)
-        if is_empty == validator.ErrorMessages.EMPTY_VAL:
-            self.errors['description'] = _empty_val
-            return
         is_not_valid = validator.validate_length(self.description, 50)
         if is_not_valid == validator.ErrorMessages.TOO_LONG:
             self.errors['description'] = _too_long
 
     def validate_trunk_line_diameter(self):
-        is_empty = validator.validate_empty(self.trunk_line_diameter)
-        if is_empty == validator.ErrorMessages.EMPTY_VAL:
-            self.errors['trunk_line_diameter'] = _empty_val
-            return
         is_not_valid = validator.validate_length(self.trunk_line_diameter, 50)
         if is_not_valid == validator.ErrorMessages.TOO_LONG:
             self.errors['trunk_line_diameter'] = _too_long
@@ -84,7 +66,6 @@ class FireHydrant(Base):
 
     def validate(self):
         self.errors = {}
-        self.validate_name()
         self.validate_description()
         self.validate_trunk_line_diameter()
         self.validate_category_id()
