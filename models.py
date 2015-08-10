@@ -1,4 +1,4 @@
-from lib.db import Base, engine
+from lib.db import Base, engine, db
 from sqlalchemy import Column, Integer, Sequence, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from utils import validator
@@ -72,6 +72,21 @@ class FireHydrant(Base):
         self.validate_latitude()
         self.validate_longitude()
         return self.errors
+
+    def get_data(self):
+        cat = db.query(Category).get(self.category_id)
+        d = {
+            "id": self.id,
+            "category_name": cat.name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "description": self.description,
+            "trunk_line_diameter": self.trunk_line_diameter
+        }
+        return d
+
+    def to_json(self):
+        return json.dumps(self.get_data())
 
 class Category(Base):
     __tablename__ = 'categories'

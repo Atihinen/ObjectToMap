@@ -2,7 +2,7 @@ from bottle import Bottle, response, request, run, route, HTTPResponse, hook
 import json
 import traceback
 from lib.db import engine, plugin, sqlalchemy, db
-from models import Category
+from models import Category, FireHydrant
 from utils.formatter import convert_to_integer
 from utils.validator import ErrorMessages
 
@@ -120,6 +120,16 @@ def new_category():
                 return setHTTPResponse(status=500)
         return setHTTPResponse(status=406, body=json.dumps(c.validate()))
     return setHTTPResponse(status=400)
+
+@route('/fire-hydrant/', method=["OPTIONS","GET"])
+def get_fire_hydrants():
+    if request.method == "OPTIONS":
+        return setHTTPResponse(status=200)
+    _fire_hydrants = db.query(FireHydrant).all()
+    data = []
+    for fh in _fire_hydrants:
+        data.append(fh.get_data())
+    return json.dumps(data)
 
 def setHTTPResponse(status, body=None):
     response = None
