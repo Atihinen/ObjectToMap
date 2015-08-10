@@ -70,3 +70,4 @@ htmlcov/*
 #Robot
 test/acceptance/*.xml
 test/acceptance/*.html
+*.csv
