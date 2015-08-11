@@ -131,6 +131,44 @@ def get_fire_hydrants():
         data.append(fh.get_data())
     return json.dumps(data)
 
+@route('/fire-hydrant/new/', method=["OPTIONS", "POST"])
+def new_fire_hydrant():
+    if request.method == "OPTIONS":
+        return setHTTPResponse(status=200)
+    required_values = ["category_id", "latitude", "longitude"]
+    req_flag = False
+    print request.forms
+    for req in required_values:
+        if not req in request.forms:
+            req_flag = True
+    if req_flag:
+        return setHTTPResponse(status=400)
+    cat_id = request.forms.get('category_id')
+    lat = request.forms.get('latitude')
+    long = request.forms.get('longitude')
+    description = ""
+    try:
+        description = request.forms.get('description')
+    except:
+        pass
+    trunk_line = ""
+    try:
+        trunk_line = request.forms.get('trunk_line_diameter')
+    except:
+        pass
+    fh = FireHydrant(description, trunk_line, cat_id, lat, long)
+    errs = fh.validate()
+    if errs:
+        return setHTTPResponse(status=406, body=errs)
+    try:
+        db.add(fh)
+        db.commit()
+        return setHTTPResponse(200)
+    except:
+        traceback.print_exc()
+        return setHTTPResponse(status=500)
+
+
 def setHTTPResponse(status, body=None):
     response = None
     if body != None:

@@ -18,9 +18,8 @@ class FireHydrant(Base):
     longitude = Column(Float)
     category_id = Column(Integer, ForeignKey('categories.id'))
 
-    def __init__(self, name, description, trunk_line_diameter, category_id, latitude, longitude):
+    def __init__(self, description, trunk_line_diameter, category_id, latitude, longitude):
         self.errors = {}
-        self.name = name
         self.description = description
         self.trunk_line_diameter = trunk_line_diameter
         self.category_id = category_id
@@ -77,7 +76,7 @@ class FireHydrant(Base):
         cat = db.query(Category).get(self.category_id)
         d = {
             "id": self.id,
-            "category_name": cat.name,
+            "category": cat.get_data(),
             "latitude": self.latitude,
             "longitude": self.longitude,
             "description": self.description,

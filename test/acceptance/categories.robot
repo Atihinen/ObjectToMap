@@ -2,6 +2,7 @@
 Library  Collections
 Library  RequestsLibrary
 Library  String
+Resource  resources/common.robot
 Suite Setup  Create Session  ${LOCATION}  http://${SERVER}
 
 
@@ -115,14 +116,6 @@ Update Category with existing name should return 409
   Verify that '${resp}' Status Code Is '200'
 
 *** Keywords ***
-Get Categories
-  [Arguments]  ${session}
-  ${data}=  Get  ${session}  /category/
-  [Return]  ${data.json()}
-
-Get Latest Item
-  [Arguments]  ${data}
-  [Return]  ${data[-1]}
 
 Get Category
   [Arguments]  ${session}  ${id}
@@ -146,14 +139,6 @@ Create Category Data
   ${data}=  Create Dictionary  name  ${name}
   [Return]  ${data}
 
-Create Post Headers
-  ${headers}=  Create Dictionary  Content-Type  application/x-www-form-urlencoded
-  [Return]  ${headers}
-
-Verify that '${resp}' status code is '${error_code}'
-  ${error_code}=  Convert To Integer  ${error_code}
-  Should Be Equal As Strings  ${resp.status_code}  ${error_code}
-
 Delete Category
   [Arguments]  ${id}  ${session}
   ${resp}=  Delete  ${session}  /category/${id}/
@@ -166,11 +151,6 @@ Category '${category}' '${key}' should be '${value}'
 Verify That Category Contains Correct Values
   [Arguments]  ${category}  ${name}
   Category '${category}' 'name' should be '${name}'
-
-Get Category Id
-  [Arguments]  ${category}
-  ${id}=  Get From Dictionary  ${category}  id
-  [Return]  ${id}
 
 Delete If Needed
   [Arguments]  ${name}=My cat
