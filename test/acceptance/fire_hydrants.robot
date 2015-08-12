@@ -89,6 +89,23 @@ Deleting Fire Hydrant With Invalid Id Should Return 406
   ${resp}=  Delete Fire Hydrant  ${LOCATION}  asd
   Verify that '${resp}' status code is '406'
 
+Get Fire Hydrant By Id Should Return 200 And Correct Values
+  Create Fire Hydrant With Default Values  ${LOCATION}
+  ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${resp}  ${fire_hydrant}=  Get Fire Hydrant  ${LOCATION}  ${id}
+  Verify that '${resp}' status code is '200'
+  Verify Fire Hydrant Data  ${fire_hydrant}  ${cat_id}  60.2251  24.7782  ${DESC}  14
+  [Teardown]  Delete If Needed  ${DESC}
+
+Get Fire Hydrant With Invalid Id Should Return 406
+  ${resp}  ${fire_hydrant}=  Get Fire Hydrant  ${LOCATION}  asd
+  Verify that '${resp}' status code is '406'
+
+Get Fire Hydrant With Not Existing Id Should Return 404
+  ${resp}  ${fire_hydrant}=  Get Fire Hydrant  ${LOCATION}  0
+  Verify that '${resp}' status code is '404'
+
 Updating Fire Hydrant With Valid Data Should Return 200
   Create Fire Hydrant With Default Values  ${LOCATION}
   ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
@@ -97,7 +114,9 @@ Updating Fire Hydrant With Valid Data Should Return 200
   ${data}=  Create Fire Hydrant Data  ${cat_id}  63.2  24.7  ${desc}  15
   ${resp}=  Update Fire Hydrant  ${LOCATION}  ${id}  ${data}
   Verify that '${resp}' status code is '200'
-  #Verify Fire Hydrant Data  ${fire_hydrant}  ${cat_id}  63.2  24.7  ${desc}  15
+  ${resp}  ${fire_hydrant}=  Get Fire Hydrant  ${LOCATION}  ${id}
+  Verify that '${resp}' status code is '200'
+  Verify Fire Hydrant Data  ${fire_hydrant}  ${cat_id}  63.2  24.7  ${desc}  15
   [Teardown]  Delete If Needed  ${desc}
 
 *** Keywords ***
@@ -176,7 +195,7 @@ Create Fire Hydrant With Default Values
 
 Fire Hydrant '${fire_hydrant}' '${key}' Should Be '${value}'
   ${real_value}=  Get From Dictionary  ${fire_hydrant}  ${key}
-  Should Be Equal  ${real_value}  ${value}
+  Should Be Equal As Strings  ${real_value}  ${value}
 
 Update Fire Hydrant
   [Arguments]  ${session}  ${id}  ${data}
@@ -193,3 +212,8 @@ Verify Fire Hydrant Data
   Fire Hydrant '${fire_hydrant}' 'longitude' Should Be '${long}'
   Fire Hydrant '${fire_hydrant}' 'description' Should Be '${desc}'
   Fire Hydrant '${fire_hydrant}' 'trunk_line_diameter' Should Be '${trunk_line}'
+
+Get Fire Hydrant
+  [Arguments]  ${session}  ${id}
+  ${data}=  Get  ${session}  /fire-hydrant/${id}/
+  [Return]  ${data}  ${data.json()}

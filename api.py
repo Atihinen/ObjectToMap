@@ -233,6 +233,18 @@ def update_fire_hydrant(id):
         db.rollback()
         return setHTTPResponse(status=500)
 
+@route('/fire-hydrant/<id>/', method=['OPTIONS', 'GET'])
+def get_fire_hydrant(id):
+    if request.method == "OPTIONS":
+        return setHTTPResponse(status=200)
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return setHTTPResponse(status=406, body=json.dumps({'id': 'NOT_NUMBER'}))
+    fh = db.query(FireHydrant).get(id)
+    if not fh:
+        return setHTTPResponse(status=404, body=json.dumps({'msg': 'NOT_FOUND'}))
+    return fh.to_json()
+
 
 
 def setHTTPResponse(status, body=None):
