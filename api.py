@@ -137,7 +137,7 @@ def new_fire_hydrant():
         return setHTTPResponse(status=200)
     required_values = ["category_id", "latitude", "longitude"]
     req_flag = False
-    print request.forms
+    print request.forms.keys()
     for req in required_values:
         if not req in request.forms:
             req_flag = True
@@ -165,6 +165,24 @@ def new_fire_hydrant():
         db.commit()
         return setHTTPResponse(200)
     except:
+        traceback.print_exc()
+        return setHTTPResponse(status=500)
+
+@route('/fire-hydrant/<id>/', method=["OPTIONS", "DELETE"])
+def delete_fire_hydrant(id):
+    if request.method == "OPTIONS":
+        return setHTTPResponse(status=200)
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return setHTTPResponse(status=406)
+    fh = db.query(FireHydrant).get(id)
+    if not fh:
+        return setHTTPResponse(status=404)
+    try:
+        db.delete(fh)
+        db.commit()
+        return setHTTPResponse(status=200)
+    except Exception:
         traceback.print_exc()
         return setHTTPResponse(status=500)
 

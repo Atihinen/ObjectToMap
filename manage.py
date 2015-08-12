@@ -110,12 +110,12 @@ port={}""".format(user, password, db, url, port)
             cat_id = categories[d[3].lower()]
             desc = ""
             try:
-                desc = d[4]
+                desc = d[4].strip()
             except:
                 pass
             trunk_line = ""
             try:
-                trunk_line = d[5]
+                trunk_line = d[5].strip()
             except:
                 pass
             self.create_fire_hydrant(cat_id, lat, long, desc, trunk_line)
