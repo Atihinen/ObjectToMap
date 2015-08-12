@@ -11,6 +11,8 @@ app = Bottle()
 
 app.install(plugin)
 
+required_values = ["category_id", "latitude", "longitude"]
+
 def set_cors(response):
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE'
@@ -135,9 +137,7 @@ def get_fire_hydrants():
 def new_fire_hydrant():
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
-    required_values = ["category_id", "latitude", "longitude"]
     req_flag = False
-    print request.forms.keys()
     for req in required_values:
         if not req in request.forms:
             req_flag = True
@@ -165,6 +165,7 @@ def new_fire_hydrant():
         db.commit()
         return setHTTPResponse(200)
     except:
+        db.rollback()
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
@@ -183,8 +184,55 @@ def delete_fire_hydrant(id):
         db.commit()
         return setHTTPResponse(status=200)
     except Exception:
+        db.rollback()
         traceback.print_exc()
         return setHTTPResponse(status=500)
+
+@route('/fire-hydrant/<id>/', method=["OPTIONS", "PUT"])
+def update_fire_hydrant(id):
+    if request.method == "OPTIONS":
+        return setHTTPResponse(status=200)
+    id = convert_to_integer(id)
+    if id == ErrorMessages.NOT_NUMBER:
+        return setHTTPResponse(status=406, body=json.dumps({'id': 'NOT_NUMBER'}))
+    req_flag = False
+    for req in required_values:
+        if not req in request.forms:
+            req_flag = True
+    if req_flag:
+        return setHTTPResponse(status=400)
+    cat_id = request.forms.get('category_id')
+    lat = request.forms.get('latitude')
+    long = request.forms.get('longitude')
+    description = ""
+    try:
+        description = request.forms.get('description')
+    except:
+        pass
+    trunk_line = ""
+    try:
+        trunk_line = request.forms.get('trunk_line_diameter')
+    except:
+        pass
+    fh = db.query(FireHydrant).get(id)
+    if not fh:
+        return setHTTPResponse(status=404)
+    fh.category_id = cat_id
+    fh.description = description
+    fh.latitude = lat
+    fh.longitude = long
+    fh.trunk_line_diameter = trunk_line
+    errs = fh.validate()
+    if errs:
+        return setHTTPResponse(status=406, body=errs)
+    try:
+        db.commit()
+        return setHTTPResponse(status=200)
+    except:
+        traceback.print_exc()
+        db.rollback()
+        return setHTTPResponse(status=500)
+
 
 
 def setHTTPResponse(status, body=None):

@@ -8,6 +8,7 @@ _empty_val = "EMPTY_VAL"
 _too_long = "TOO_LONG"
 _not_integer = "NOT_INTEGER"
 _not_float = "NOT_FLOAT"
+_not_existing = "NOT_EXISTING"
 
 class FireHydrant(Base):
     __tablename__ = 'fire_hydrants'
@@ -44,6 +45,10 @@ class FireHydrant(Base):
         is_not_valid = validator.validate_integer(self.category_id)
         if is_not_valid == validator.ErrorMessages.NOT_NUMBER:
             self.errors['category_id'] = _not_integer
+            return
+        cat = db.query(Category).get(self.category_id)
+        if not cat:
+            self.errors['category_id'] = _not_existing
 
     def validate_latitude(self):
         is_empty = validator.validate_empty(self.latitude)

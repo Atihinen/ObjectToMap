@@ -28,13 +28,77 @@ Creating New Fire Hydrant Without Required Fields SHould Return 400
   ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
   Verify that '${resp}' status code is '400'
 
+Creating New Fire Hydrant With Invalid Category Id Should Return 406
+  ${desc}=  Generate Random String  12
+  ${data}=  Create Fire Hydrant Data  aasd  60.25  24.7  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+  ${data}=  Create Fire Hydrant Data  0  60.25  24.7  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+  ${data}=  Create Fire Hydrant Data  ${EMPTY}  60.25  24.7  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+
+Creating New Fire Hydrant With Invalid Latitude Should Return 406
+  ${desc}=  Generate Random String  12
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  asd  24.7  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  ${EMPTY}  24.7  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+
+Creating New Fire Hydrant With Invalid Longitude Should Return 406
+  ${desc}=  Generate Random String  12
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  60.24  asd  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  60.25  ${EMPTY}  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+
+Creating New Fire Hydrant With Invalid Description Should Return 406
+  ${desc}=  Generate Random String  51
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  60.24  24.5  ${desc}  14
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+
+Creating New Fire Hydrant With Invalid Trunk Line Diameter Should Return 406
+  ${desc}=  Generate Random String  12
+  ${trunk_line}=  Generate Random String  51
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  60.24  24.5  ${desc}  ${trunk_line}
+  ${resp}=  Create New Fire Hydrant  ${LOCATION}  ${data}
+  Verify that '${resp}' status code is '406'
+
 Deleteing Existing Fire Hydrant Should Return 200
   Create Fire Hydrant With Default Values  ${LOCATION}
   ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
   ${resp}=  Delete Fire Hydrant  ${LOCATION}  ${id}
   Verify that '${resp}' status code is '200'
 
+Deleting Not Existing Fire Hydrant Should Return 404
+  ${resp}=  Delete Fire Hydrant  ${LOCATION}  0
+  Verify that '${resp}' status code is '404'
 
+Deleting Fire Hydrant With Invalid Id Should Return 406
+  ${resp}=  Delete Fire Hydrant  ${LOCATION}  asd
+  Verify that '${resp}' status code is '406'
+
+Updating Fire Hydrant With Valid Data Should Return 200
+  Create Fire Hydrant With Default Values  ${LOCATION}
+  ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
+  ${cat_id}=  Get Latest Category Id  ${LOCATION}
+  ${desc}=  Generate Random String  14
+  ${data}=  Create Fire Hydrant Data  ${cat_id}  63.2  24.7  ${desc}  15
+  ${resp}=  Update Fire Hydrant  ${LOCATION}  ${id}  ${data}
+  Verify that '${resp}' status code is '200'
+  #Verify Fire Hydrant Data  ${fire_hydrant}  ${cat_id}  63.2  24.7  ${desc}  15
+  [Teardown]  Delete If Needed  ${desc}
 
 *** Keywords ***
 
@@ -113,3 +177,19 @@ Create Fire Hydrant With Default Values
 Fire Hydrant '${fire_hydrant}' '${key}' Should Be '${value}'
   ${real_value}=  Get From Dictionary  ${fire_hydrant}  ${key}
   Should Be Equal  ${real_value}  ${value}
+
+Update Fire Hydrant
+  [Arguments]  ${session}  ${id}  ${data}
+  ${headers}=  Create Post Headers
+  ${resp}=  Put  ${session}  /fire-hydrant/${id}/  data=${data}  headers=${headers}
+  [Return]  ${resp}
+
+Verify Fire Hydrant Data
+  [Arguments]  ${fire_hydrant}  ${cat_id}  ${lat}  ${long}  ${desc}  ${trunk_line}
+  ${category}=  Get From Dictionary  ${fire_hydrant}  category
+  ${real_cat_id}=  Get From Dictionary  ${category}  id
+  Should Be Equal  ${real_cat_id}  ${cat_id}
+  Fire Hydrant '${fire_hydrant}' 'latitude' Should Be '${lat}'
+  Fire Hydrant '${fire_hydrant}' 'longitude' Should Be '${long}'
+  Fire Hydrant '${fire_hydrant}' 'description' Should Be '${desc}'
+  Fire Hydrant '${fire_hydrant}' 'trunk_line_diameter' Should Be '${trunk_line}'
