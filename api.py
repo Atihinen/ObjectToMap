@@ -10,7 +10,6 @@ from utils.validator import ErrorMessages
 app = Bottle()
 
 app.install(plugin)
-
 required_values = ["category_id", "latitude", "longitude"]
 
 def set_cors(response):
@@ -73,7 +72,7 @@ def delete_category(id):
         db.commit()
         return setHTTPResponse(status=200)
     except:
-        print "Something went wrong"
+        db.rollback()
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
@@ -97,6 +96,7 @@ def update_category(id):
             db.commit()
             return setHTTPResponse(status=200)
         except Exception as err:
+            db.rollback()
             traceback.print_exc()
             return setHTTPResponse(status=500)
     return setHTTPResponse(status=406, body=json.dumps(c.validate()))
@@ -118,6 +118,7 @@ def new_category():
                 return setHTTPResponse(status=200)
 
             except Exception as err:
+                db.rollback()
                 traceback.print_exc()
                 return setHTTPResponse(status=500)
         return setHTTPResponse(status=406, body=json.dumps(c.validate()))
@@ -127,6 +128,7 @@ def new_category():
 def get_fire_hydrants():
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
+    db.flush()
     _fire_hydrants = db.query(FireHydrant).all()
     data = []
     for fh in _fire_hydrants:
@@ -200,7 +202,7 @@ def update_fire_hydrant(id):
         if not req in request.forms:
             req_flag = True
     if req_flag:
-        return setHTTPResponse(status=400)
+        return setHTTPResponse(status=400, body=json.dumps({'msg': 'REQUIRED_VALUES'}))
     cat_id = request.forms.get('category_id')
     lat = request.forms.get('latitude')
     long = request.forms.get('longitude')
@@ -217,21 +219,36 @@ def update_fire_hydrant(id):
     fh = db.query(FireHydrant).get(id)
     if not fh:
         return setHTTPResponse(status=404)
+    #Store previous values
+    _cat_id= fh.category_id
+    _lat = fh.latitude
+    _long = fh.longitude
+    _desc = fh.description
+    _trunk_line = fh.trunk_line_diameter
+    #Update with new values
     fh.category_id = cat_id
     fh.description = description
     fh.latitude = lat
     fh.longitude = long
     fh.trunk_line_diameter = trunk_line
     errs = fh.validate()
+    print errs
     if errs:
+        #Restore previuous values
+        fh.category_id = _cat_id
+        fh.latitude = _lat
+        fh.longitude = _long
+        fh.description = _desc
+        fh.trunk_line_diameter = _trunk_line
         return setHTTPResponse(status=406, body=errs)
-    try:
-        db.commit()
-        return setHTTPResponse(status=200)
-    except:
-        traceback.print_exc()
-        db.rollback()
-        return setHTTPResponse(status=500)
+    else:
+        try:
+            db.commit()
+            return setHTTPResponse(status=200)
+        except:
+            db.rollback()
+            traceback.print_exc()
+            return setHTTPResponse(status=500)
 
 @route('/fire-hydrant/<id>/', method=['OPTIONS', 'GET'])
 def get_fire_hydrant(id):

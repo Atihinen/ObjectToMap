@@ -119,6 +119,32 @@ Updating Fire Hydrant With Valid Data Should Return 200
   Verify Fire Hydrant Data  ${fire_hydrant}  ${cat_id}  63.2  24.7  ${desc}  15
   [Teardown]  Delete If Needed  ${desc}
 
+Updating Fire Hydrant With Invalid Id Should Return 406
+  ${data}=  Create Fire Hydrant Data With Valid Values  ${LOCATION}
+  ${resp}=  Update Fire Hydrant  ${LOCATION}  asd  ${data}
+  Verify that '${resp}' status code is '406'
+
+Updating Fire Hydrant Without Existing Id Should Return 404
+  ${data}=  Create Fire Hydrant Data With Valid Values  ${LOCATION}
+  ${resp}=  Update Fire Hydrant  ${LOCATION}  0  ${data}
+
+Updating Fire Hydrant With Invalid Data Should Return 406
+  Create Fire Hydrant With Default Values  ${LOCATION}
+  ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
+  ${invalid_str}=  Generate Random String  51
+  ${data}=  Create Fire Hydrant Data  asd  ${EMPTY}  ${EMPTY}  ${invalid_str}  ${invalid_str}
+  ${resp}=  Update Fire Hydrant  ${LOCATION}  ${id}  ${data}
+  Verify that '${resp}' status code is '406'
+  [Teardown]  Delete If Needed  ${DESC}
+
+Updating Fire Hydrant Without Required Values Should Return 400
+  Create Fire Hydrant With Default Values  ${LOCATION}
+  ${id}=  Get Latest Fire Hydrant Id  ${LOCATION}
+  ${data}=  Create Dictionary  description  asda
+  ${resp}=  Update Fire Hydrant  ${LOCATION}  ${id}  ${data}
+  Verify that '${resp}' status code is '400'
+  [Teardown]  Delete If Needed  ${DESC}
+
 *** Keywords ***
 
 Delete If Needed

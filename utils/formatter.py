@@ -6,3 +6,10 @@ def convert_to_integer(val):
         return val
     except ValueError:
         return ErrorMessages.NOT_NUMBER
+
+def convert_to_float(val):
+    try:
+        val = float(val)
+        return val
+    except ValueError:
+        return ErrorMessages.NOT_NUMBER

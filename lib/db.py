@@ -15,5 +15,8 @@ plugin = sqlalchemy.Plugin(
     use_kwargs=False # If it is true and keyword is not defined, plugin uses **kwargs argument to inject session database (default False).
 )
 from sqlalchemy.orm import sessionmaker
-Session = sessionmaker(bind=engine)
-db = Session()
+
+def create_session():
+    Session = sessionmaker(bind=engine)
+    return Session()
+db = create_session()
