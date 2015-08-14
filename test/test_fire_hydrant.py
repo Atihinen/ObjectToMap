@@ -1,11 +1,14 @@
 import unittest2 as unittest
 from models import FireHydrant, _empty_val, _not_integer, _too_long, _not_float
 from random import randint
+from mock import MagicMock, patch
 
 class TestFireHydrant(unittest.TestCase):
 
-    def test_should_be_valid_with_valid_values(self):
+    @patch('models.db')
+    def test_should_be_valid_with_valid_values(self, mock_db):
         fh = FireHydrant("description", "trunk_line_diameter", 1, 1.1, 1.2)
+        fh.db = mock_db
         res = fh.validate()
         self.assertEqual({}, res)
 
@@ -60,8 +63,10 @@ class TestFireHydrant(unittest.TestCase):
         self.assertTrue("trunk_line_diameter" in fh.errors)
         self.assertEqual(_too_long, fh.errors['trunk_line_diameter'])
 
-    def test_validate_category_id_should_give_correct_messages(self):
+    @patch("models.db")
+    def test_validate_category_id_should_give_correct_messages(self, mock_db):
         fh = FireHydrant("description", "trunk_line_diameter", 1, 1.2, 1.3)
+        fh.db = mock_db
         fh.validate_category_id()
         self.assertFalse("category_id" in fh.errors)
         fh.category_id = "asdd"
