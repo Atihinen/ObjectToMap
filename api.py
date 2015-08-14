@@ -5,7 +5,7 @@ from lib.db import engine, plugin, sqlalchemy, db
 from models import Category, FireHydrant
 from utils.formatter import convert_to_integer
 from utils.validator import ErrorMessages
-
+import sys
 
 app = Bottle()
 
@@ -276,4 +276,14 @@ def setHTTPResponse(status, body=None):
 
 
 if __name__ == "__main__":
-    run(host='0.0.0.0', port=8080)
+    port = 8080
+    ip = '0.0.0.0'
+    try:
+        port = sys.argv[1]
+    except:
+        pass
+    try:
+        ip = sys.argv[2]
+    except:
+        pass
+    run(host=ip, port=port)
