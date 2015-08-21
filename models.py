@@ -92,6 +92,10 @@ class FireHydrant(Base):
     def to_json(self):
         return json.dumps(self.get_data())
 
+    def get_category_name(self):
+        cat = db.query(Category).get(self.category_id)
+        return cat.name
+
 class Category(Base):
     __tablename__ = 'categories'
     id = Column(Integer, Sequence('id_seq'), primary_key=True)

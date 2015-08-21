@@ -1,11 +1,13 @@
-from bottle import Bottle, response, request, run, route, HTTPResponse, hook
+from bottle import Bottle, response, request, run, route, HTTPResponse, hook, static_file
 import json
 import traceback
 from lib.db import engine, plugin, sqlalchemy, db
 from models import Category, FireHydrant
 from utils.formatter import convert_to_integer
 from utils.validator import ErrorMessages
+from utils.writer import CSVWriter
 import sys
+import os
 
 app = Bottle()
 
@@ -261,6 +263,29 @@ def get_fire_hydrant(id):
     if not fh:
         return setHTTPResponse(status=404, body=json.dumps({'msg': 'NOT_FOUND'}))
     return fh.to_json()
+
+@route('/fire-hydrant/csv', method=['OPTIONS', 'GET'])
+def get_fire_hydrant_csv():
+    fire_hydrants = db.query(FireHydrant).all()
+    rows = []
+    #first line
+    rows.append(["Id", "Lat", "Lon", "Name", "Note", "Text"])
+    for fire_hydrant in fire_hydrants:
+        rows.append([
+            fire_hydrant.id,
+            fire_hydrant.latitude,
+            fire_hydrant.longitude,
+            fire_hydrant.get_category_name(),
+            fire_hydrant.description,
+            fire_hydrant.trunk_line_diameter
+        ])
+    csvw = CSVWriter()
+    _file, _path = csvw.write_csv(rows)
+    if not os.path.isfile(_path):
+        raise IOError("File {}, doesn't exists".format(_path))
+    print _file
+    print _path
+    return static_file(_file, root=os.path.join(os.sep, "tmp"))
 
 
 
