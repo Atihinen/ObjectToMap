@@ -13,7 +13,7 @@ app = Bottle()
 
 app.install(plugin)
 required_values = ["category_id", "latitude", "longitude"]
-
+csv_file = None
 def set_cors(response):
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE'
@@ -24,6 +24,17 @@ def enable_cors():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT, DELETE'
     response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+
+@hook('after_request')
+def delete_csv():
+    global csv_file
+    if csv_file:
+        try:
+            os.remove(csv_file)
+        except:
+            pass
+        finally:
+            csv_file = None
 
 @route('/', method="GET")
 def index():
@@ -67,6 +78,17 @@ def delete_category(id):
     if id == ErrorMessages.NOT_NUMBER:
         return setHTTPResponse(status=406)
     c = db.query(Category).get(id)
+    _fire_hydrants = db.query(FireHydrant).filter_by(category_id=id)
+    if _fire_hydrants:
+        for fh in _fire_hydrants:
+            try:
+                db.delete(fh)
+                db.commit()
+            except:
+                db.rollback()
+                traceback.print_exc()
+                return setHTTPResponse(500, body={"msg": "CHILD_FAILED"})
+
     if not c:
         return setHTTPResponse(status=404)
     try:
@@ -234,7 +256,6 @@ def update_fire_hydrant(id):
     fh.longitude = long
     fh.trunk_line_diameter = trunk_line
     errs = fh.validate()
-    print errs
     if errs:
         #Restore previuous values
         fh.category_id = _cat_id
@@ -266,6 +287,7 @@ def get_fire_hydrant(id):
 
 @route('/fire-hydrant/csv', method=['OPTIONS', 'GET'])
 def get_fire_hydrant_csv():
+    global csv_file
     fire_hydrants = db.query(FireHydrant).all()
     rows = []
     #first line
@@ -281,10 +303,7 @@ def get_fire_hydrant_csv():
         ])
     csvw = CSVWriter()
     _file, _path = csvw.write_csv(rows)
-    if not os.path.isfile(_path):
-        raise IOError("File {}, doesn't exists".format(_path))
-    print _file
-    print _path
+    csv_file = _path
     return static_file(_file, root=os.path.join(os.sep, "tmp"))
 
 

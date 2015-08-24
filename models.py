@@ -109,10 +109,11 @@ class Category(Base):
     def validate_name(self):
         is_empty = validator.validate_empty(self.name)
         if is_empty == validator.ErrorMessages.EMPTY_VAL:
-            self.errors["name"]= "Cannot be empty"
+            self.errors["name"]= _empty_val
+            return
         is_not_valid = validator.validate_length(self.name, 50)
         if is_not_valid == validator.ErrorMessages.TOO_LONG:
-            self.errors["name"]= "Was too long"
+            self.errors["name"]= _too_long
 
     def validate(self):
         self.errors = {}
