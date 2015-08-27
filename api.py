@@ -38,16 +38,9 @@ def delete_csv():
 
 @route('/', method="GET")
 def index():
-    _entities = db.query(Entity).all()
-    data = []
-    for entity in _entities:
-        cont = {
-            'name': entity.name
-        }
-        data.append(cont)
-    json_val = json.dumps(data)
-    response.content_type = "application/json"
-    return json_val
+    _path = os.path.join('.','views')
+    print _path
+    return static_file("api.html", root=_path)
 
 @route('/category/', method=['OPTIONS', 'GET'])
 def get_categories():

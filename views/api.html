@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+</head>
+<body>
+<div class="col-md-12">	
+<h1>API documentation</h1>
+<h2>Models</h2>
+<h3>Category</h3>
+<p>Attributes</p>
+<table class="table table-striped">
+	<tr>
+		<th>Name</th><th>Type</th><th>Limitations</th>
+	</tr>
+	<tr>
+		<td>Id</td><td>Int</td><td>Autoincrement, unique</td>
+	</tr>
+	<tr>
+		<td>Name</td><td>String</td><td>50 char max</td>
+	</tr>
+</table>
+<p>Json presentation</p>
+<pre>
+{
+	"id": 0,
+	"name": "..."
+}
+</pre>
+<h4>End points</h4>
+<table class="table table-striped">
+	<tr>
+		<th>Type</th><th>url</th><th>arguments</th><th>return</th><th>other</th>
+	</tr>
+	<tr>
+		<td>GET</td><td>/category/</td><td></td>
+		<td>
+			<pre>[{
+	"id": 0,
+	"name": "..."
+},...]</pre>
+		</td>
+		<td>If no categories, then return value is empty list</td>
+	</tr>
+	<tr>
+		<td>GET</td><td>/category/:id</td><td>id</td>
+		<td>
+			<pre>{
+	"id": 0,
+	"name": "..."
+}
+			</pre>
+		</td>
+		<td><p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p></td>
+	</tr>
+	<tr>
+		<td>POST</td><td>/category/new</td>
+		<td>name:String</td><td></td>
+		<td>
+			<p>Content-type: application/x-www-form-urlencoded</p>
+			<p>If not valid name returns HTTP status code 406</p>
+			<p>If not name in POST returns HTTP status code 400</p>
+			<p>If name already exists returns HTTP status code 409</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+		</td>
+	</tr>
+	<tr>
+		<td>PUT</td><td>/category/:id</td><td>name:String</td><td></td>
+		<td>
+			<p>Content-type: application/x-www-form-urlencoded</p>
+			<p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p>
+			<p>If not valid name returns HTTP status code 406</p>
+			<p>If not name in POST returns HTTP status code 400</p>
+			<p>If name already exists returns HTTP status code 409</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+		</td>
+	</tr>
+	<tr>
+		<td>DELETE</td><td>/category/:id</td><td></td><td></td>
+		<td>
+			<p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+			<p>Deletes all child fire hydrants</p>
+		</td>
+	</tr>
+</table>
+<h3>Fire hydrant</h3>
+<p>Attributes</p>
+<table class="table table-striped">
+	<tr>
+		<th>Name</th><th>Type</th><th>Limitations</th>
+	</tr>
+	<tr>
+		<td>Id</td><td>Int</td><td>Autoincrement</td>
+	</tr>
+	<tr>
+		<td>Description</td><td>String</td><td>50 char max, optional</td>
+	</tr>
+	<tr>
+		<td>Trunk line diamater</td><td>String</td><td>50 char max, optional</td>
+	</tr>
+	<tr>
+		<td>Category id</td><td>Int</td><td>Foreign key, required</td>
+	</tr>
+	<tr>
+		<td>Latitude</td><td>Float</td><td>required</td>
+	</tr>
+	<tr>
+		<td>Longitude</td><td>Float</td><td>required</td>
+	</tr>
+</table>
+<p>Json presentation</p>
+<pre>
+{
+	"id": 0,
+	"category": {
+		"id": 0,
+		"name": "..."
+	},
+	"latitude": 0.0,
+	"longitude": 0.0,
+	"description": "...",
+	"trunk_line_diameter": "..."
+}
+</pre>
+<h4>End points</h4>
+<table class="table table-striped">
+	<tr>
+		<th>Type</th><th>url</th><th>arguments</th><th>return</th><th>other</th>
+	</tr>
+	<tr>
+		<td>GET</td><td>/fire-hydrant/</td><td></td>
+		<td>
+			<pre>[
+{
+	"id": 0,
+	"category": {
+		"id": 0,
+		"name": "..."
+	},
+	"latitude": 0.0,
+	"longitude": 0.0,
+	"description": "...",
+	"trunk_line_diameter": "..."
+}, ...]
+			</pre>
+		</td>
+		<td><p>If no fire hydrants returns empty list</p></td>
+	</tr>
+	<tr>
+		<td>GET</td><td>/fire-hydrant/:id/</td><td></td>
+		<td>
+			<pre>{
+	"id": 0,
+	"category": {
+		"id": 0,
+		"name": "..."
+	},
+	"latitude": 0.0,
+	"longitude": 0.0,
+	"description": "...",
+	"trunk_line_diameter": "..."
+}</pre>
+		</td>
+		<td><p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p></td>
+	</tr>
+	<tr>
+		<td>POST</td><td>/fire-hydrant/new/</td><td>description:String, latitude:Float, longitude:Float,trunk_line_diameter:String, category_id:Int</td><td></td>
+		<td>
+			<p>Content-type: application/x-www-form-urlencoded</p>
+			<p>If not valid category_id, latitude or longitude returns HTTP status code 406</p>
+			<p>If not category_id, latitude and longitude in POST returns HTTP status code 400</p>
+			<p>If not empty and not valid description or trunk_line_diameter returns HTTP status code 406</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+		</td>
+	</tr>
+	<tr>
+		<td>PUT</td><td>/fire-hydrant/:id/</td><td>description:String, latitude:Float, longitude:Float, trunk_line_diamater:String, category_id:Int</td><td></td>
+		<td>
+			<p>Content-type: application/x-www-form-urlencoded</p>
+			<p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p>
+			<p>If not valid category_id, latitude or longitude returns HTTP status code 406</p>
+			<p>If not category_id, latitude and longitude in POST returns HTTP status code 400</p>
+			<p>If not empty and not valid description or trunk_line_diameter returns HTTP status code 406</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+		</td>
+	</tr>
+	<tr>
+		<td>DELETE</td><td>/fire-hydrant/:id/</td><td></td><td></td>
+		<td>
+			<p>If given id is not a number returns HTTP status code 406.</p>
+			<p>If given id is not found returns HTTP status code 404</p>
+			<p>If any issues with database connection returns HTTP status code 500</p>
+		</td>
+	</tr>
+</table>
+</div>
+</body>
+</html>
