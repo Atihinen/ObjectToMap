@@ -55,4 +55,4 @@ Run following command `nosetests test/`
 1. Cd to folder test/acceptance
 2. Run command `pybot -A localhost.txt .`
   * Notice that if the API is not running on port 8080 you need to change the value
-  * If you want to test completely different environemnt the easiest way is to create copy of the localhost.txt and change the correct information there
+  * If you want to test completely different environment the easiest way is to create copy of the localhost.txt and change the correct information there
