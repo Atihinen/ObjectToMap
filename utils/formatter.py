@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'jjauhiainen'
 from validator import ErrorMessages
 def convert_to_integer(val):

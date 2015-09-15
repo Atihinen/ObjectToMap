@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bottle import Bottle, response, request, run, route, HTTPResponse, hook, static_file
 import json
 import traceback

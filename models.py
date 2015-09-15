@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from lib.db import Base, engine, db
 from sqlalchemy import Column, Integer, Sequence, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
