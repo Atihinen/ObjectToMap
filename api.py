@@ -124,7 +124,8 @@ def update_category(id):
 @route('/category/new', method=['OPTIONS', 'POST'])
 def new_category():
     if "name" in request.forms:
-        name = request.forms.get('name')
+        name = request.forms.getunicode('name')
+        print type(name)
         _name = db.query(Category).filter_by(name=name).first()
         if _name:
             return setHTTPResponse(status=409, body=json.dumps({"name": "DUBLICATE"}))
@@ -295,6 +296,7 @@ def get_fire_hydrant_csv():
             fire_hydrant.description,
             fire_hydrant.trunk_line_diameter
         ])
+        print type(fire_hydrant.get_category_name())
     csvw = CSVWriter()
     _file, _path = csvw.write_csv(rows)
     csv_file = _path
