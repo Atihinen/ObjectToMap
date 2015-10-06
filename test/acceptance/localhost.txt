@@ -1,2 +1,2 @@
---variable SERVER:localhost:8080
+--variable SERVER:localhost:8080/v1
 --variable LOCATION:localhost

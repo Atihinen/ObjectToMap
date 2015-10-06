@@ -43,7 +43,7 @@ def index():
     print _path
     return static_file("api.html", root=_path)
 
-@route('/category/', method=['OPTIONS', 'GET'])
+@route('/v1/category/', method=['OPTIONS', 'GET'])
 def get_categories():
     data = []
     _categories = db.query(Category).all()
@@ -53,7 +53,7 @@ def get_categories():
     json_val = json.dumps(data)
     return json_val
 
-@route('/category/<id>/', method="GET")
+@route('/v1/category/<id>/', method="GET")
 def get_category(id):
     id = convert_to_integer(id)
     if id == ErrorMessages.NOT_NUMBER:
@@ -64,7 +64,7 @@ def get_category(id):
     response.content_type = "application/json"
     return c.to_json()
 
-@route('/category/<id>/', method=['OPTIONS', 'DELETE'])
+@route('/v1/category/<id>/', method=['OPTIONS', 'DELETE'])
 def delete_category(id):
     if request.method == 'OPTIONS':
         return setHTTPResponse(status=200)
@@ -94,7 +94,7 @@ def delete_category(id):
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
-@route('/category/<id>/', method=['OPTIONS', 'PUT'])
+@route('/v1/category/<id>/', method=['OPTIONS', 'PUT'])
 def update_category(id):
     if request.method == 'OPTIONS':
         return setHTTPResponse(status=200)
@@ -121,7 +121,7 @@ def update_category(id):
 
 
 
-@route('/category/new', method=['OPTIONS', 'POST'])
+@route('/v1/category/new', method=['OPTIONS', 'POST'])
 def new_category():
     if "name" in request.forms:
         name = request.forms.getunicode('name')
