@@ -174,7 +174,7 @@ Create Fire Hydrant Data With Valid Values
 
 Delete Fire Hydrant
     [Arguments]  ${session}  ${id}
-    ${resp}=  Delete  ${session}  /fire-hydrant/${id}/
+    ${resp}=  Delete  ${session}  /fire-hydrants/${id}
     [Return]  ${resp}
 
 Get Latest Category Id
@@ -210,7 +210,7 @@ Get Fire Hydrant Id
 Create New Fire Hydrant
   [Arguments]  ${session}  ${data}
   ${headers}=  Create Post Headers
-  ${resp}=  Post  ${session}  /fire-hydrant/new/  data=${data}  headers=${headers}
+  ${resp}=  Post  ${session}  /fire-hydrants/new  data=${data}  headers=${headers}
   [Return]  ${resp}
 
 Create Fire Hydrant With Default Values
@@ -226,7 +226,7 @@ Fire Hydrant '${fire_hydrant}' '${key}' Should Be '${value}'
 Update Fire Hydrant
   [Arguments]  ${session}  ${id}  ${data}
   ${headers}=  Create Post Headers
-  ${resp}=  Put  ${session}  /fire-hydrant/${id}/  data=${data}  headers=${headers}
+  ${resp}=  Put  ${session}  /fire-hydrants/${id}  data=${data}  headers=${headers}
   [Return]  ${resp}
 
 Verify Fire Hydrant Data
@@ -241,5 +241,5 @@ Verify Fire Hydrant Data
 
 Get Fire Hydrant
   [Arguments]  ${session}  ${id}
-  ${data}=  Get  ${session}  /fire-hydrant/${id}/
+  ${data}=  Get  ${session}  /fire-hydrants/${id}
   [Return]  ${data}  ${data.json()}

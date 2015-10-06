@@ -156,7 +156,7 @@ def get_fire_hydrants():
         data.append(fh.get_data())
     return json.dumps(data)
 
-@route('/v1/fire-hydrant/new/', method=["OPTIONS", "POST"])
+@route('/v1/fire-hydrants/new', method=["OPTIONS", "POST"])
 def new_fire_hydrant():
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
@@ -192,7 +192,7 @@ def new_fire_hydrant():
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
-@route('/v1/fire-hydrant/<id>/', method=["OPTIONS", "DELETE"])
+@route('/v1/fire-hydrants/<id>', method=["OPTIONS", "DELETE"])
 def delete_fire_hydrant(id):
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
@@ -211,7 +211,7 @@ def delete_fire_hydrant(id):
         traceback.print_exc()
         return setHTTPResponse(status=500)
 
-@route('/v1/fire-hydrant/<id>/', method=["OPTIONS", "PUT"])
+@route('/v1/fire-hydrants/<id>', method=["OPTIONS", "PUT"])
 def update_fire_hydrant(id):
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
@@ -270,7 +270,7 @@ def update_fire_hydrant(id):
             traceback.print_exc()
             return setHTTPResponse(status=500)
 
-@route('/v1/fire-hydrant/<id>/', method=['OPTIONS', 'GET'])
+@route('/v1/fire-hydrants/<id>', method=['OPTIONS', 'GET'])
 def get_fire_hydrant(id):
     if request.method == "OPTIONS":
         return setHTTPResponse(status=200)
