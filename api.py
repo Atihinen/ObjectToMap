@@ -112,7 +112,8 @@ def update_category(id):
     if not c.validate():
         try:
             db.commit()
-            return setHTTPResponse(status=200)
+            response.content_type = "application/json"
+            return c.to_json()
         except Exception as err:
             db.rollback()
             traceback.print_exc()
@@ -134,7 +135,8 @@ def new_category():
             try:
                 db.add(c)
                 db.commit()
-                return setHTTPResponse(status=200)
+                response.content_type = "application/json"
+                return c.to_json()
 
             except Exception as err:
                 db.rollback()
