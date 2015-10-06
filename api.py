@@ -292,7 +292,7 @@ def get_fire_hydrant_csv():
             fire_hydrant.id,
             fire_hydrant.latitude,
             fire_hydrant.longitude,
-            fire_hydrant.get_category_name(),
+            fire_hydrant.get_category_name().encode('utf-8'),
             fire_hydrant.description,
             fire_hydrant.trunk_line_diameter
         ])
