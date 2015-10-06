@@ -119,7 +119,7 @@ Update Category with existing name should return 409
 
 Get Category
   [Arguments]  ${session}  ${id}
-  ${data}=  Get  ${session}  /category/${id}/
+  ${data}=  Get  ${session}  /categories/${id}
   [Return]  ${data}  ${data.json()}
 
 Create New Category With Default Values
@@ -131,7 +131,7 @@ Create New Category With Default Values
 Create New Category
   [Arguments]  ${session}  ${data}
   ${headers}=  Create Post Headers
-  ${resp}=  Post  ${session}  /category/new  data=${data}  headers=${headers}
+  ${resp}=  Post  ${session}  /categories/new  data=${data}  headers=${headers}
   [Return]  ${resp}
 
 Create Category Data
@@ -141,7 +141,7 @@ Create Category Data
 
 Delete Category
   [Arguments]  ${id}  ${session}
-  ${resp}=  Delete  ${session}  /category/${id}/
+  ${resp}=  Delete  ${session}  /categories/${id}
   [Return]  ${resp}
 
 Category '${category}' '${key}' should be '${value}'
@@ -164,5 +164,5 @@ Delete If Needed
 Update Category
   [Arguments]  ${id}  ${data}  ${session}
   ${headers}=  Create Post Headers
-  ${resp}=  Put  ${session}  /category/${id}/  data=${data}  headers=${headers}
+  ${resp}=  Put  ${session}  /categories/${id}  data=${data}  headers=${headers}
   [Return]  ${resp}

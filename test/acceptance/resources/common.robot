@@ -5,7 +5,7 @@ Verify that '${resp}' status code is '${error_code}'
 
 Get Categories
   [Arguments]  ${session}
-  ${data}=  Get  ${session}  /category/
+  ${data}=  Get  ${session}  /categories
   [Return]  ${data.json()}
 
 Get Latest Item
