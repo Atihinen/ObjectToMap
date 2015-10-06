@@ -8,7 +8,7 @@ Suite Setup  Create Session  ${LOCATION}  http://${SERVER}
 *** Test Cases ***
 
 Getting Fire Hydrants Should Return 200
-  ${resp}=  Get  ${LOCATION}  /fire-hydrant/
+  ${resp}=  Get  ${LOCATION}  /fire-hydrants
   Verify that '${resp}' status code is '200'
 
 Creating New Fire Hydrant With Valid Values Should Return 200
@@ -186,7 +186,7 @@ Get Latest Category Id
 
 Get Fire Hydrants
     [Arguments]  ${session}
-    ${data}=  Get  ${LOCATION}  /fire-hydrant/
+    ${data}=  Get  ${LOCATION}  /fire-hydrants
     [Return]  ${data.json()}
 
 Get Latest Fire Hydrant Id
