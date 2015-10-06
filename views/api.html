@@ -136,7 +136,7 @@
 		<th>Type</th><th>url</th><th>arguments</th><th>return</th><th>other</th>
 	</tr>
 	<tr>
-		<td>GET</td><td>/fire-hydrant/</td><td></td>
+		<td>GET</td><td>/fire-hydrants</td><td></td>
 		<td>
 			<pre>[
 {
@@ -155,7 +155,7 @@
 		<td><p>If no fire hydrants returns empty list</p></td>
 	</tr>
 	<tr>
-		<td>GET</td><td>/fire-hydrant/:id/</td><td></td>
+		<td>GET</td><td>/fire-hydrants/:id</td><td></td>
 		<td>
 			<pre>{
 	"id": 0,
@@ -173,7 +173,7 @@
 			<p>If given id is not found returns HTTP status code 404</p></td>
 	</tr>
 	<tr>
-		<td>POST</td><td>/fire-hydrant/new/</td><td>description:String, latitude:Float, longitude:Float,trunk_line_diameter:String, category_id:Int</td><td></td>
+		<td>POST</td><td>/fire-hydrants/new</td><td>description:String, latitude:Float, longitude:Float,trunk_line_diameter:String, category_id:Int</td><td></td>
 		<td>
 			<p>Content-type: application/x-www-form-urlencoded</p>
 			<p>If not valid category_id, latitude or longitude returns HTTP status code 406</p>
@@ -183,7 +183,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>PUT</td><td>/fire-hydrant/:id/</td><td>description:String, latitude:Float, longitude:Float, trunk_line_diamater:String, category_id:Int</td><td></td>
+		<td>PUT</td><td>/fire-hydrants/:id</td><td>description:String, latitude:Float, longitude:Float, trunk_line_diamater:String, category_id:Int</td><td></td>
 		<td>
 			<p>Content-type: application/x-www-form-urlencoded</p>
 			<p>If given id is not a number returns HTTP status code 406.</p>
@@ -195,7 +195,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>DELETE</td><td>/fire-hydrant/:id/</td><td></td><td></td>
+		<td>DELETE</td><td>/fire-hydrants/:id</td><td></td><td></td>
 		<td>
 			<p>If given id is not a number returns HTTP status code 406.</p>
 			<p>If given id is not found returns HTTP status code 404</p>
