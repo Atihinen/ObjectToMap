@@ -37,7 +37,7 @@
 		<th>Type</th><th>url</th><th>arguments</th><th>return</th><th>other</th>
 	</tr>
 	<tr>
-		<td>GET</td><td>/category/</td><td></td>
+		<td>GET</td><td>/categories</td><td></td>
 		<td>
 			<pre>[{
 	"id": 0,
@@ -59,7 +59,7 @@
 			<p>If given id is not found returns HTTP status code 404</p></td>
 	</tr>
 	<tr>
-		<td>POST</td><td>/category/new</td>
+		<td>POST</td><td>/categories/new</td>
 		<td>name:String</td><td></td>
 		<td>
 			<p>Content-type: application/x-www-form-urlencoded</p>
@@ -70,7 +70,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>PUT</td><td>/category/:id</td><td>name:String</td><td></td>
+		<td>PUT</td><td>/categories/:id</td><td>name:String</td><td></td>
 		<td>
 			<p>Content-type: application/x-www-form-urlencoded</p>
 			<p>If given id is not a number returns HTTP status code 406.</p>
@@ -82,7 +82,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>DELETE</td><td>/category/:id</td><td></td><td></td>
+		<td>DELETE</td><td>/categories/:id</td><td></td><td></td>
 		<td>
 			<p>If given id is not a number returns HTTP status code 406.</p>
 			<p>If given id is not found returns HTTP status code 404</p>
