@@ -186,7 +186,8 @@ def new_fire_hydrant():
     try:
         db.add(fh)
         db.commit()
-        return setHTTPResponse(200)
+        response.content_type = "application/json"
+        return fh.to_json()
     except:
         db.rollback()
         traceback.print_exc()
@@ -264,7 +265,8 @@ def update_fire_hydrant(id):
     else:
         try:
             db.commit()
-            return setHTTPResponse(status=200)
+            response.content_type = "application/json"
+            return fh.to_json()
         except:
             db.rollback()
             traceback.print_exc()
