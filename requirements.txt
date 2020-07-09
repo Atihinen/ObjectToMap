@@ -25,7 +25,7 @@ pyOpenSSL==0.13
 pycrypto==2.6.1
 pycurl==7.19.3
 pyserial==2.6
-requests==2.2.1
+requests==2.20.0
 robotframework==2.8.7
 robotframework-requests==0.3.8
 simplejson==3.3.1
